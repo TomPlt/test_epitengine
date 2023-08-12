@@ -33,7 +33,7 @@ func (p *Player) MoveRight() {
 	p.X += Speed
 }
 
-func (p *Player) ResetPosition(screenWidth, screenHeight, rectSize int) {
-	p.X = float64(screenWidth/2 - rectSize/2)
-	p.Y = float64(screenHeight/2 - rectSize/2)
-}
+// func (p *Player) ResetPosition(screenWidth, screenHeight, rectSize int) {
+// 	p.X = float64(screenWidth/2 - rectSize/2)
+// 	p.Y = float64(screenHeight/2 - rectSize/2)
+// }
