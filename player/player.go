@@ -1,36 +1,57 @@
 package player
 
+type Charactertype string
+
+const (
+	Speed                    = 10
+	PlayerType Charactertype = "player"
+	EnemyType  Charactertype = "enemy"
+	NPCType    Charactertype = "npc"
+)
+
 type Player struct {
-	name string
-	X, Y float64
+	Name     string
+	X, Y     float64
+	charType Charactertype
 }
 
-func NewPlayer(name string, x float64, y float64) Player {
+func NewPlayer(name string, x float64, y float64, charType Charactertype) Player {
 	return Player{
-		name: name,
-		X:    x,
-		Y:    y,
+		Name:     name,
+		X:        x,
+		Y:        y,
+		charType: charType,
 	}
 }
 
-const (
-	Speed = 10
-)
-
 func (p *Player) MoveUp() {
-	p.Y -= Speed
+	if p.charType == PlayerType {
+		p.Y -= Speed
+	}
 }
 
 func (p *Player) MoveDown() {
-	p.Y += Speed
+	if p.charType == PlayerType {
+		p.Y += Speed
+	}
 }
 
 func (p *Player) MoveLeft() {
-	p.X -= Speed
+	if p.charType == PlayerType {
+		p.X -= Speed
+	}
 }
 
 func (p *Player) MoveRight() {
-	p.X += Speed
+	if p.charType == PlayerType {
+		p.X += Speed
+	}
+}
+
+func (p *Player) ResetPosition(screenWidth, screenHeight int) {
+	halfWidth, halfHeight := float64(screenWidth)/2, float64(screenHeight)/2
+	p.X = halfWidth
+	p.Y = halfHeight
 }
 
 // func (p *Player) ResetPosition(screenWidth, screenHeight, rectSize int) {

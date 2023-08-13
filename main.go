@@ -63,7 +63,6 @@ func (g *Game) Update() error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	// Set the background color to white
-	screen.Fill(color.Black)
 
 	// Create a new image of the size of the rectangle
 	// rectImage := ebiten.NewImage(rectSize, rectSize)
@@ -109,8 +108,8 @@ func main() {
 	game.init()
 
 	game.players = []player.Player{
-		{X: screenWidth / 2, Y: screenHeight / 2},
-		{X: screenWidth/2 + 50, Y: screenHeight/2 + 50},
+		player.NewPlayer("Player", float64(screenWidth)/2, float64(screenHeight)/2, player.PlayerType),
+		player.NewPlayer("Merchant", float64(screenWidth)/2, float64(screenHeight)/6, player.NPCType), // I replaced NPCType with OtherType because in the previous example, I did not introduce NPCType.
 	}
 
 	ebiten.SetWindowSize(screenWidth, screenHeight)
