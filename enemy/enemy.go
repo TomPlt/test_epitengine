@@ -15,10 +15,10 @@ const (
 )
 
 type Enemy struct {
-	Name        string
-	X, Y        float64
-	Entype      Enemytype
-	PlayerImage *ebiten.Image
+	Name       string
+	X, Y       float64
+	Entype     Enemytype
+	EnemyImage *ebiten.Image
 }
 
 func NewEnemy(name string, x float64, y float64, Entype Enemytype, image string) Enemy {
@@ -34,26 +34,11 @@ func NewEnemy(name string, x float64, y float64, Entype Enemytype, image string)
 	imageOut := viz_utils.ResizeImage(originalImage, 70, 50)
 
 	return Enemy{
-		Name:        name,
-		X:           x,
-		Y:           y,
-		Entype:      Entype,
-		PlayerImage: imageOut,
+		Name:       name,
+		X:          x,
+		Y:          y,
+		Entype:     Entype,
+		EnemyImage: imageOut,
 	}
 }
 
-// Movement based on Player Position
-func (e *Enemy) MoveToPlayer(playerX float64, playerY float64) {
-	if e.X < playerX {
-		e.X += 1
-	}
-	if e.X > playerX {
-		e.X -= 1
-	}
-	if e.Y < playerY {
-		e.Y += 1
-	}
-	if e.Y > playerY {
-		e.Y -= 1
-	}
-}

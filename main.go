@@ -7,6 +7,7 @@ import (
 	"math"
 
 	"github.com/TomPlt/test_epitengine/enemy"
+	"github.com/TomPlt/test_epitengine/movement"
 	"github.com/TomPlt/test_epitengine/player"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text"
@@ -43,20 +44,20 @@ func (g *Game) Update() error {
 		// }
 
 		if ebiten.IsKeyPressed(ebiten.KeyUp) && g.players[i].Y > 0 {
-			g.players[i].MoveUp()
+			movement.MoveUp(&g.players[i])
 		}
 		if ebiten.IsKeyPressed(ebiten.KeyDown) && g.players[i].Y < float64(screenHeight-g.players[i].PlayerImage.Bounds().Dy()) {
-			g.players[i].MoveDown()
+			movement.MoveDown(&g.players[i])
 		}
 		if ebiten.IsKeyPressed(ebiten.KeyLeft) && g.players[i].X > 0 {
-			g.players[i].MoveLeft()
+			movement.MoveLeft(&g.players[i])
 		}
 		if ebiten.IsKeyPressed(ebiten.KeyRight) && g.players[i].X < float64(screenWidth-g.players[i].PlayerImage.Bounds().Dx()) {
-			g.players[i].MoveRight()
+			movement.MoveRight(&g.players[i])
 		}
 
 		for j := range g.enemies {
-			g.enemies[j].MoveToPlayer(g.players[i].X, g.players[i].Y)
+			movement.MoveToPlayer(&g.enemies[j], g.players[i].X, g.players[i].Y)
 		}
 	}
 	return nil
@@ -75,6 +76,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(p.X, p.Y)
 		screen.DrawImage(p.PlayerImage, op)
+		coll_x, coll_y := movement.CollidesWith(&g.enemies[0], &p)
+		if coll_x > 0 && coll_y > 0 {
+			text.Draw(screen, "Collision!", basicfont.Face7x13, int(coll_x), int(coll_y), color.White)
+		}
 		positionText := fmt.Sprintf("%v, X: %v, Y: %v", p.Name, math.Round(p.X), math.Round(p.Y))
 		text.Draw(screen, positionText, basicfont.Face7x13, 10, 15*(1+counter), color.White)
 	}
@@ -82,7 +87,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	for counter, e := range g.enemies {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(e.X, e.Y)
-		screen.DrawImage(e.PlayerImage, op)
+		screen.DrawImage(e.EnemyImage, op)
 		positionText := fmt.Sprintf("%v X: %v, Y: %v", e.Name, math.Round(e.X), math.Round(e.Y))
 		text.Draw(screen, positionText, basicfont.Face7x13, screenWidth-150, 15*(1+counter), color.White)
 	}

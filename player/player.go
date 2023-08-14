@@ -43,35 +43,3 @@ func NewPlayer(name string, x float64, y float64, CharType Charactertype, image 
 		PlayerImage: imageOut,
 	}
 }
-
-// Movement functions // TODO: Move to a separate file
-
-func (p *Player) MoveUp() {
-	if p.CharType == PlayerType {
-		p.Y -= Speed
-	}
-}
-
-func (p *Player) MoveDown() {
-	if p.CharType == PlayerType {
-		p.Y += Speed
-	}
-}
-
-func (p *Player) MoveLeft() {
-	if p.CharType == PlayerType {
-		p.X -= Speed
-	}
-}
-
-func (p *Player) MoveRight() {
-	if p.CharType == PlayerType {
-		p.X += Speed
-	}
-}
-
-func (p *Player) ResetPosition(screenWidth, screenHeight int) {
-	halfWidth, halfHeight := float64(screenWidth)/2, float64(screenHeight)/2
-	p.X = halfWidth
-	p.Y = halfHeight
-}
