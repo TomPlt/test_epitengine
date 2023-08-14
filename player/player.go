@@ -3,6 +3,7 @@ package player
 import (
 	"log"
 
+	"github.com/TomPlt/test_epitengine/viz_utils"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
@@ -22,16 +23,6 @@ type Player struct {
 	PlayerImage *ebiten.Image
 }
 
-func resizeImage(src *ebiten.Image, width, height int) *ebiten.Image {
-	target := ebiten.NewImage(width, height)
-	sx := float64(width) / float64(src.Bounds().Dx())
-	sy := float64(height) / float64(src.Bounds().Dy())
-	opts := &ebiten.DrawImageOptions{}
-	opts.GeoM.Scale(sx, sy)
-	target.DrawImage(src, opts)
-	return target
-}
-
 func NewPlayer(name string, x float64, y float64, CharType Charactertype, image string) Player {
 	originalImage, _, err := ebitenutil.NewImageFromFile(image)
 	if err != nil {
@@ -42,7 +33,7 @@ func NewPlayer(name string, x float64, y float64, CharType Charactertype, image 
 		log.Fatal("The original image is nil.")
 	}
 
-	imageOut := resizeImage(originalImage, 70, 50)
+	imageOut := viz_utils.ResizeImage(originalImage, 70, 50)
 
 	return Player{
 		Name:        name,

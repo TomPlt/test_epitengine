@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"image/color"
 	"log"
+	"math"
 
+	"github.com/TomPlt/test_epitengine/enemy"
 	"github.com/TomPlt/test_epitengine/player"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text"
@@ -20,6 +22,7 @@ const (
 
 type Game struct {
 	players []player.Player
+	enemies []enemy.Enemy
 	// gopherImage *ebiten.Image
 }
 
@@ -64,15 +67,22 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// rectImage.Fill(rectColor)
 
 	// Draw the rectangle image on the screen at the desired position
-	for _, p := range g.players {
+	for counter, p := range g.players {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(p.X, p.Y)
 		screen.DrawImage(p.PlayerImage, op)
-	}
-	for counter, i := range g.players {
-		positionText := fmt.Sprintf("X: %v, Y: %v", i.X, i.Y)
+		positionText := fmt.Sprintf("%v, X: %v, Y: %v", p.Name, math.Round(p.X), math.Round(p.Y))
 		text.Draw(screen, positionText, basicfont.Face7x13, 10, 15*(1+counter), color.White)
 	}
+
+	for counter, e := range g.enemies {
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(e.X, e.Y)
+		screen.DrawImage(e.PlayerImage, op)
+		positionText := fmt.Sprintf("%v X: %v, Y: %v", e.Name, math.Round(e.X), math.Round(e.Y))
+		text.Draw(screen, positionText, basicfont.Face7x13, screenWidth-150, 15*(1+counter), color.White)
+	}
+
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
@@ -85,7 +95,9 @@ func main() {
 
 	game.players = []player.Player{
 		player.NewPlayer("Player", float64(screenWidth)/2, float64(screenHeight)/2, player.PlayerType, "images/gopher.png"),
-		player.NewPlayer("Merchant", float64(screenWidth)/2, float64(screenHeight)/6, player.NPCType, "images/croco.png"),
+	}
+	game.enemies = []enemy.Enemy{
+		enemy.NewEnemy("Enemy1", float64(screenWidth)/6, float64(screenHeight)/2, enemy.Enemy1, "images/croco.png"),
 	}
 
 	ebiten.SetWindowSize(screenWidth, screenHeight)

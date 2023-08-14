@@ -3,7 +3,6 @@ module github.com/TomPlt/test_epitengine
 go 1.21.0
 
 require (
-	github.com/hajimehoshi/ebiten v1.12.12
 	github.com/hajimehoshi/ebiten/v2 v2.5.6
 	golang.org/x/image v0.6.0
 )
