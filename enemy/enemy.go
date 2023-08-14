@@ -41,3 +41,19 @@ func NewEnemy(name string, x float64, y float64, Entype Enemytype, image string)
 		PlayerImage: imageOut,
 	}
 }
+
+// Movement based on Player Position
+func (e *Enemy) MoveToPlayer(playerX float64, playerY float64) {
+	if e.X < playerX {
+		e.X += 1
+	}
+	if e.X > playerX {
+		e.X -= 1
+	}
+	if e.Y < playerY {
+		e.Y += 1
+	}
+	if e.Y > playerY {
+		e.Y -= 1
+	}
+}

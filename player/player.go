@@ -44,6 +44,8 @@ func NewPlayer(name string, x float64, y float64, CharType Charactertype, image 
 	}
 }
 
+// Movement functions // TODO: Move to a separate file
+
 func (p *Player) MoveUp() {
 	if p.CharType == PlayerType {
 		p.Y -= Speed

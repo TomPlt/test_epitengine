@@ -54,6 +54,10 @@ func (g *Game) Update() error {
 		if ebiten.IsKeyPressed(ebiten.KeyRight) && g.players[i].X < float64(screenWidth-g.players[i].PlayerImage.Bounds().Dx()) {
 			g.players[i].MoveRight()
 		}
+
+		for j := range g.enemies {
+			g.enemies[j].MoveToPlayer(g.players[i].X, g.players[i].Y)
+		}
 	}
 	return nil
 }
@@ -82,7 +86,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		positionText := fmt.Sprintf("%v X: %v, Y: %v", e.Name, math.Round(e.X), math.Round(e.Y))
 		text.Draw(screen, positionText, basicfont.Face7x13, screenWidth-150, 15*(1+counter), color.White)
 	}
-
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
