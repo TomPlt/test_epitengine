@@ -17,10 +17,11 @@ const (
 )
 
 type Player struct {
-	Name        string
-	X, Y        float64
-	CharType    Charactertype
-	PlayerImage *ebiten.Image
+	Name             string
+	X, Y             float64
+	CharType         Charactertype
+	PlayerImage      *ebiten.Image
+	CollisionCounter int
 }
 
 func NewPlayer(name string, x float64, y float64, CharType Charactertype, image string) Player {

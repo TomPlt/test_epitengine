@@ -1,2 +1,1 @@
-- player/enemy collision 
 - player/enemy interaction --> i.e. open interaction window 
