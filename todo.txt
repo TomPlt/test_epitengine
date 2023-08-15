@@ -1,1 +1,2 @@
 - player/enemy interaction --> i.e. open interaction window 
+- add it collision counter > 3 --> open game over screen 

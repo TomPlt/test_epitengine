@@ -22,6 +22,7 @@ type Player struct {
 	CharType         Charactertype
 	PlayerImage      *ebiten.Image
 	CollisionCounter int
+	Health           int
 }
 
 func NewPlayer(name string, x float64, y float64, CharType Charactertype, image string) Player {
@@ -42,5 +43,6 @@ func NewPlayer(name string, x float64, y float64, CharType Charactertype, image 
 		Y:           y,
 		CharType:    CharType,
 		PlayerImage: imageOut,
+		Health:      100,
 	}
 }

@@ -28,6 +28,7 @@ type Game struct {
 	collisionNotified bool
 	maxCollisionTime  int
 	collisionTimer    int
+	isGameOver        bool
 	// gopherImage *ebiten.Image
 }
 
@@ -62,6 +63,23 @@ func (g *Game) Update() error {
 		for j := range g.enemies {
 			movement.MoveToPlayer(&g.enemies[j], &g.players[i])
 		}
+
+		_, _, collides := movement.CollidesWith(&g.enemies[0], &g.players[i])
+		if collides && !g.collisionNotified {
+			g.collisionDetected = true
+			g.players[i].Health -= 10
+			fmt.Println(g.players[i].Health)
+			g.collisionTimer = 0 // Reset the timer when collision occurs
+		} else if !collides {
+			g.collisionTimer++ // Increment the timer if no collision
+			if g.collisionTimer > g.maxCollisionTime {
+				g.collisionDetected = false
+				g.collisionNotified = false
+			}
+			if g.players[i].Name == "Player" && g.players[i].Health <= 0 {
+				g.isGameOver = true
+			}
+		}
 	}
 	return nil
 }
@@ -75,21 +93,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// rectImage.Fill(rectColor)
 
 	// Draw the rectangle image on the screen at the desired position
+	print(g.isGameOver)
 	for counter, p := range g.players {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(p.X, p.Y)
 		screen.DrawImage(p.PlayerImage, op)
-		_, _, collides := movement.CollidesWith(&g.enemies[0], &p)
-		if collides && !g.collisionNotified {
-			g.collisionDetected = true
-			g.collisionTimer = 0 // Reset the timer when collision occurs
-		} else if !collides {
-			g.collisionTimer++ // Increment the timer if no collision
-			if g.collisionTimer > g.maxCollisionTime {
-				g.collisionDetected = false
-				g.collisionNotified = false
-			}
-		}
 
 		positionText := fmt.Sprintf("%v, X: %v, Y: %v", p.Name, math.Round(p.X), math.Round(p.Y))
 		text.Draw(screen, positionText, basicfont.Face7x13, 10, 15*(1+counter), color.White)
