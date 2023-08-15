@@ -19,7 +19,7 @@ const CollisionThreshold = 2 // This is the delay you want to introduce before t
 
 // Movement functions // TODO: Move to a separate file
 func MoveUp(p *player.Player, e *enemy.Enemy) {
-	if p.CharType == player.PlayerType {
+	if p.CharType == player.PlayerType && p.Health > 0 {
 		p.Y -= player.Speed
 		if _, _, collides := CollidesWith(e, p); collides {
 			p.CollisionCounter++
@@ -33,7 +33,7 @@ func MoveUp(p *player.Player, e *enemy.Enemy) {
 	}
 }
 func MoveDown(p *player.Player, e *enemy.Enemy) {
-	if p.CharType == player.PlayerType {
+	if p.CharType == player.PlayerType && p.Health > 0 {
 		p.Y += player.Speed
 		if _, _, collides := CollidesWith(e, p); collides {
 			p.CollisionCounter++
@@ -48,7 +48,7 @@ func MoveDown(p *player.Player, e *enemy.Enemy) {
 }
 
 func MoveLeft(p *player.Player, e *enemy.Enemy) {
-	if p.CharType == player.PlayerType {
+	if p.CharType == player.PlayerType && p.Health > 0 {
 		p.X -= player.Speed
 		if _, _, collides := CollidesWith(e, p); collides {
 			p.CollisionCounter++
@@ -63,7 +63,7 @@ func MoveLeft(p *player.Player, e *enemy.Enemy) {
 }
 
 func MoveRight(p *player.Player, e *enemy.Enemy) {
-	if p.CharType == player.PlayerType {
+	if p.CharType == player.PlayerType && p.Health > 0 {
 		p.X += player.Speed
 		if _, _, collides := CollidesWith(e, p); collides {
 			p.CollisionCounter++

@@ -68,7 +68,6 @@ func (g *Game) Update() error {
 		if collides && !g.collisionNotified {
 			g.collisionDetected = true
 			g.players[i].Health -= 10
-			fmt.Println(g.players[i].Health)
 			g.collisionTimer = 0 // Reset the timer when collision occurs
 		} else if !collides {
 			g.collisionTimer++ // Increment the timer if no collision
@@ -76,9 +75,9 @@ func (g *Game) Update() error {
 				g.collisionDetected = false
 				g.collisionNotified = false
 			}
-			if g.players[i].Name == "Player" && g.players[i].Health <= 0 {
-				g.isGameOver = true
-			}
+		}
+		if g.players[i].Name == "Player" && g.players[i].Health <= 0 {
+			g.isGameOver = true
 		}
 	}
 	return nil
@@ -93,7 +92,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// rectImage.Fill(rectColor)
 
 	// Draw the rectangle image on the screen at the desired position
-	print(g.isGameOver)
 	for counter, p := range g.players {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(p.X, p.Y)
@@ -101,6 +99,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 		positionText := fmt.Sprintf("%v, X: %v, Y: %v", p.Name, math.Round(p.X), math.Round(p.Y))
 		text.Draw(screen, positionText, basicfont.Face7x13, 10, 15*(1+counter), color.White)
+		text.Draw(screen, fmt.Sprintf("Health: %v", p.Health), basicfont.Face7x13, 10, 15*(1+counter)+15, color.White)
 	}
 
 	if g.collisionDetected && g.collisionTimer <= g.maxCollisionTime {
@@ -118,6 +117,19 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		positionText := fmt.Sprintf("%v X: %v, Y: %v", e.Name, math.Round(e.X), math.Round(e.Y))
 		text.Draw(screen, positionText, basicfont.Face7x13, screenWidth-150, 15*(1+counter), color.White)
 	}
+	if g.isGameOver {
+		g.drawGameOver(screen)
+	}
+}
+func (g *Game) drawGameOver(screen *ebiten.Image) {
+	// Overlay a semi-transparent rectangle
+	overlay := ebiten.NewImage(screenWidth, screenHeight)
+	overlay.Fill(color.NRGBA{0, 0, 0, 128}) // RGBA with 50% transparency
+	screen.DrawImage(overlay, &ebiten.DrawImageOptions{})
+
+	// Draw "Game Over" text. You can use the ebiten/text package or any other method.
+	// This is a simple example and might not be perfectly centered.
+	text.Draw(screen, "Game Over", basicfont.Face7x13, screenWidth/2-40, screenHeight/2, color.White)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
