@@ -48,23 +48,24 @@ func (g *Game) Update() error {
 		// 	g.players[i].ResetPosition(screenWidth, screenHeight)
 		// }
 		// check if there in an enmy in the same position as the player with bounding box
-		if ebiten.IsKeyPressed(ebiten.KeyUp) && g.players[i].Y > 0 {
-			movement.MoveUp(&g.players[i], &g.enemies[0])
+		if ebiten.IsKeyPressed(ebiten.KeyUp) {
+			movement.MovePlayer(&g.players[i], g.enemies, movement.Up)
 		}
-		if ebiten.IsKeyPressed(ebiten.KeyDown) && g.players[i].Y < float64(screenHeight-g.players[i].PlayerImage.Bounds().Dy()) {
-			movement.MoveDown(&g.players[i], &g.enemies[0])
+		if ebiten.IsKeyPressed(ebiten.KeyDown) {
+			movement.MovePlayer(&g.players[i], g.enemies, movement.Down)
 		}
-		if ebiten.IsKeyPressed(ebiten.KeyLeft) && g.players[i].X > 0 {
-			movement.MoveLeft(&g.players[i], &g.enemies[0])
+		if ebiten.IsKeyPressed(ebiten.KeyLeft) {
+			movement.MovePlayer(&g.players[i], g.enemies, movement.Left)
 		}
-		if ebiten.IsKeyPressed(ebiten.KeyRight) && g.players[i].X < float64(screenWidth-g.players[i].PlayerImage.Bounds().Dx()) {
-			movement.MoveRight(&g.players[i], &g.enemies[0])
+		if ebiten.IsKeyPressed(ebiten.KeyRight) {
+			movement.MovePlayer(&g.players[i], g.enemies, movement.Right)
 		}
+
 		for j := range g.enemies {
 			movement.MoveToPlayer(&g.enemies[j], &g.players[i])
 		}
 
-		_, _, collides := movement.CollidesWith(&g.enemies[0], &g.players[i])
+		collides := movement.CollidesWith(&g.enemies[0], &g.players[i])
 		if collides && !g.collisionNotified {
 			g.collisionDetected = true
 			g.players[i].Health -= 10
@@ -81,17 +82,10 @@ func (g *Game) Update() error {
 		}
 	}
 	return nil
+
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	// Set the background color to white
-
-	// Create a new image of the size of the rectangle
-	// rectImage := ebiten.NewImage(rectSize, rectSize)
-	// rectColor := color.RGBA{0, 255, 0, 120} // Red color
-	// rectImage.Fill(rectColor)
-
-	// Draw the rectangle image on the screen at the desired position
 	for counter, p := range g.players {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(p.X, p.Y)
@@ -122,13 +116,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 }
 func (g *Game) drawGameOver(screen *ebiten.Image) {
-	// Overlay a semi-transparent rectangle
 	overlay := ebiten.NewImage(screenWidth, screenHeight)
-	overlay.Fill(color.NRGBA{0, 0, 0, 128}) // RGBA with 50% transparency
+	overlay.Fill(color.NRGBA{0, 0, 0, 200}) // RGBA with 50% transparency
 	screen.DrawImage(overlay, &ebiten.DrawImageOptions{})
-
-	// Draw "Game Over" text. You can use the ebiten/text package or any other method.
-	// This is a simple example and might not be perfectly centered.
 	text.Draw(screen, "Game Over", basicfont.Face7x13, screenWidth/2-40, screenHeight/2, color.White)
 }
 
@@ -145,6 +135,7 @@ func main() {
 	}
 	game.enemies = []enemy.Enemy{
 		enemy.NewEnemy("Enemy1", float64(screenWidth)/6, float64(screenHeight)/2, enemy.Enemy1, "images/croco.png"),
+		enemy.NewEnemy("Tree", float64(screenWidth)/9, float64(screenHeight)/3, enemy.Environment, "images/tree.png"),
 	}
 
 	ebiten.SetWindowSize(screenWidth, screenHeight)

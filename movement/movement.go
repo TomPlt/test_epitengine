@@ -5,74 +5,90 @@ import (
 	"github.com/TomPlt/test_epitengine/player"
 )
 
-func CollidesWith(e *enemy.Enemy, p *player.Player) (float64, float64, bool) {
-	if p.X < e.X+float64(e.EnemyImage.Bounds().Dx()) &&
+const CollisionDepth = 1
+
+func CollidesWith(e *enemy.Enemy, p *player.Player) bool {
+	return p.X < e.X+float64(e.EnemyImage.Bounds().Dx()) &&
 		p.X+float64(p.PlayerImage.Bounds().Dx()) > e.X &&
 		p.Y < e.Y+float64(e.EnemyImage.Bounds().Dy()) &&
-		p.Y+float64(p.PlayerImage.Bounds().Dy()) > e.Y {
-		return p.X, p.Y, true
-	}
-	return -1.0, -1.0, false
+		p.Y+float64(p.PlayerImage.Bounds().Dy()) > e.Y
 }
 
-const CollisionThreshold = 2 // This is the delay you want to introduce before the pushback
+func OverlapDepth(e *enemy.Enemy, p *player.Player) (float64, float64) {
+	xOverlap := Min(p.X+float64(p.PlayerImage.Bounds().Dx()), e.X+float64(e.EnemyImage.Bounds().Dx())) - Max(p.X, e.X)
+	yOverlap := Min(p.Y+float64(p.PlayerImage.Bounds().Dy()), e.Y+float64(e.EnemyImage.Bounds().Dy())) - Max(p.Y, e.Y)
 
-// Movement functions // TODO: Move to a separate file
-func MoveUp(p *player.Player, e *enemy.Enemy) {
-	if p.CharType == player.PlayerType && p.Health > 0 {
-		p.Y -= player.Speed
-		if _, _, collides := CollidesWith(e, p); collides {
-			p.CollisionCounter++
-			if p.CollisionCounter > CollisionThreshold {
-				p.Y += player.Speed
-				p.CollisionCounter = 0 // Reset the counter
-			}
-		} else {
-			p.CollisionCounter = 0 // Reset the counter if there's no collision
-		}
-	}
-}
-func MoveDown(p *player.Player, e *enemy.Enemy) {
-	if p.CharType == player.PlayerType && p.Health > 0 {
-		p.Y += player.Speed
-		if _, _, collides := CollidesWith(e, p); collides {
-			p.CollisionCounter++
-			if p.CollisionCounter > CollisionThreshold {
-				p.Y -= player.Speed
-				p.CollisionCounter = 0 // Reset the counter
-			}
-		} else {
-			p.CollisionCounter = 0 // Reset the counter if there's no collision
-		}
-	}
+	return xOverlap, yOverlap
 }
 
-func MoveLeft(p *player.Player, e *enemy.Enemy) {
-	if p.CharType == player.PlayerType && p.Health > 0 {
-		p.X -= player.Speed
-		if _, _, collides := CollidesWith(e, p); collides {
-			p.CollisionCounter++
-			if p.CollisionCounter > CollisionThreshold {
-				p.X += player.Speed
-				p.CollisionCounter = 0 // Reset the counter
-			}
-		} else {
-			p.CollisionCounter = 0 // Reset the counter if there's no collision
-		}
+func Min(a, b float64) float64 {
+	if a < b {
+		return a
 	}
+	return b
 }
 
-func MoveRight(p *player.Player, e *enemy.Enemy) {
-	if p.CharType == player.PlayerType && p.Health > 0 {
-		p.X += player.Speed
-		if _, _, collides := CollidesWith(e, p); collides {
-			p.CollisionCounter++
-			if p.CollisionCounter > CollisionThreshold {
-				p.X -= player.Speed
-				p.CollisionCounter = 0 // Reset the counter
+func Max(a, b float64) float64 {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+type Direction int
+
+const (
+	Up Direction = iota
+	Down
+	Left
+	Right
+)
+
+func MovePlayer(p *player.Player, enemies []enemy.Enemy, dir Direction) {
+	if p.CharType != player.PlayerType || p.Health <= 0 {
+		return
+	}
+
+	originalX, originalY := p.X, p.Y
+
+	var moveAmount float64
+	switch dir {
+	case Up:
+		moveAmount = -player.Speed
+		p.Y += moveAmount
+	case Down:
+		moveAmount = player.Speed
+		p.Y += moveAmount
+	case Left:
+		moveAmount = -player.Speed
+		p.X += moveAmount
+	case Right:
+		moveAmount = player.Speed
+		p.X += moveAmount
+	}
+
+	for _, e := range enemies {
+		if CollidesWith(&e, p) {
+			xOverlap, yOverlap := OverlapDepth(&e, p)
+
+			switch dir {
+			case Up:
+				if yOverlap > CollisionDepth {
+					p.Y = originalY
+				}
+			case Down:
+				if yOverlap > CollisionDepth {
+					p.Y = originalY
+				}
+			case Left:
+				if xOverlap > CollisionDepth {
+					p.X = originalX
+				}
+			case Right:
+				if xOverlap > CollisionDepth {
+					p.X = originalX
+				}
 			}
-		} else {
-			p.CollisionCounter = 0 // Reset the counter if there's no collision
 		}
 	}
 }
@@ -83,28 +99,41 @@ func ResetPosition(p *player.Player, screenWidth int, screenHeight int) {
 	p.Y = halfHeight
 }
 
-// Movement based on Player Position
 func MoveToPlayer(e *enemy.Enemy, p *player.Player) {
-	originalX, originalY := e.X, e.Y // store the original position
+	if e.Entype == enemy.Enemy1 {
 
-	if e.X < p.X {
-		e.X += 1
-	}
-	if e.X > p.X {
-		e.X -= 1
-	}
-	if e.Y < p.Y {
-		e.Y += 1
-	}
-	if e.Y > p.Y {
-		e.Y -= 1
-	}
+		if e.X < p.X {
+			e.X += 1
+		}
+		if e.X > p.X {
+			e.X -= 1
+		}
+		if e.Y < p.Y {
+			e.Y += 1
+		}
+		if e.Y > p.Y {
+			e.Y -= 1
+		}
 
-	// Check for collision
-	_, _, collides := CollidesWith(e, p)
-	if collides {
-		// Reset position to avoid collision
-		e.X = originalX
-		e.Y = originalY
+		if CollidesWith(e, p) {
+			xOverlap, yOverlap := OverlapDepth(e, p)
+
+			// Adjust enemy's position based on overlap depth, only if it's greater than CollisionDepth.
+			if xOverlap > CollisionDepth {
+				if e.X < p.X {
+					e.X -= xOverlap
+				} else {
+					e.X += xOverlap
+				}
+			}
+
+			if yOverlap > CollisionDepth {
+				if e.Y < p.Y {
+					e.Y -= yOverlap
+				} else {
+					e.Y += yOverlap
+				}
+			}
+		}
 	}
 }

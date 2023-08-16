@@ -11,7 +11,8 @@ import (
 type Enemytype string
 
 const (
-	Enemy1 Enemytype = "enemy1"
+	Enemy1      Enemytype = "enemy1"
+	Environment Enemytype = "environment"
 )
 
 type Enemy struct {
@@ -41,4 +42,3 @@ func NewEnemy(name string, x float64, y float64, Entype Enemytype, image string)
 		EnemyImage: imageOut,
 	}
 }
-
